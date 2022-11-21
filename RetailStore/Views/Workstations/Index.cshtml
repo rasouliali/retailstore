@@ -1,0 +1,49 @@
+﻿@model IEnumerable<RetailStorePrj.Data.Workstation>
+
+@{
+    ViewData["Title"] = ViewBag.RetailStoreName+" _ Work Station";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" asp-route-RetailStoreId="@ViewBag.RetailStoreId">Create New</a>
+    &nbsp;
+    <a asp-action="Index" asp-controller="Home" class="btn btn-primary" asp-route-RetailStoreId="@ViewBag.RetailStoreId">Back To Tree</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" asp-route-RetailStoreId="@ViewBag.RetailStoreId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" asp-route-RetailStoreId="@ViewBag.RetailStoreId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" asp-route-RetailStoreId="@ViewBag.RetailStoreId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

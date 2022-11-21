@@ -1,0 +1,327 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<a class="btn-primary btn add-case-root">+(root)</a>
+<ul id="myUL">
+    @*<li>
+            <span class="caret">Beverages</span><a class="add-case" >+</a>
+            <ul class="nested">
+                <li>
+                    <span class="">Water</span><a class="add-case">+</a>
+                    <ul class="nested">
+                    </ul>
+                </li>
+                <li>Coffee</li>
+                <li>
+                    <span class="caret">Tea</span><a class="add-case">+</a>
+                    <ul class="nested">
+                        <li>Black Tea</li>
+                        <li>White Tea</li>
+                        <li>
+                            <span class="caret">Green Tea</span><a class="add-case">+</a>
+                            <ul class="nested">
+                                <li>Sencha</li>
+                                <li>Gyokuro</li>
+                                <li>Matcha</li>
+                                <li>Pi Lo Chun</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>*@
+</ul>
+@section Scripts{
+    <div class="modal fade" id="RetailStoreModal" tabindex="-1" role="dialog" aria-labelledby="RetailStoreModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="RetailStoreModalTitle">Retail Store</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <input id="Id" type="hidden" />
+                <input id="retailId" type="hidden" />
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label for="name">Name *</label>
+                            <input id="name" class="form-control" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="OpenningDate">OpenningDate</label>
+                            <input id="OpenningDate" class="form-control" type="date" />
+                        </div>
+                        <div class="col-sm-6">
+                            <input id="IsActive" type="checkbox" value="true" />
+                            <label for="IsActive">Is Active</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input id="IsTel" type="checkbox" value="true" />
+                            <label for="IsTel">Is Tel</label>
+                        </div>
+                        <div class="col-12">
+                            <label for="address">Address</label>
+                            <input id="address" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" id="clear">Clear</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-change">Save changes</button>
+                    <button type="button" class="btn btn-outline-danger" id="workstation">Work Station</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var treeData = [];
+        $.get('/api/RetailStores', {}, function (data) {
+            treeData = data;
+            processTree();
+        });
+        function processTree() {
+            var tmpTree = JSON.parse(JSON.stringify(treeData));
+            for (var i = 0; i < tmpTree.length; i++) {
+                addInRoot(tmpTree[i].name, tmpTree[i].id);
+                if (tmpTree[i].childs)
+                    processChildTree(tmpTree[i].id, tmpTree[i].childs);
+            }
+        }
+        function processChildTree(parentId, childs) {
+            for (var i = 0; i < childs.length; i++) {
+                addCaseFunction($('[data-id="' + parentId + '"]').get(0), childs[i].name, childs[i].id);
+                if (childs[i].childs)
+                    processChildTree(childs[i].id, childs[i].childs);
+            }
+        }
+        var chidElem;
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function () {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
+        $('#workstation').on('click', function () {
+            var id = $('#Id').val();
+            if (id) {
+                window.location.href = "/Workstations/Index/" + id;
+            }
+        });
+
+
+        $('#save-change').on('click', function () {
+            var name = $('#name').val();
+            var address = $('#address').val();
+            var OpenningDate = $('#OpenningDate').val();
+            var IsActive = $('#IsActive').prop('checked');
+            var IsTel = $('#IsTel').prop('checked');
+            var parentId=$('#retailId').val();
+            var id=$('#Id').val();
+                //"Id":"00000000-0000-0000-0000-000000000000",
+            var RetailStoredata = {
+                "Name": name,
+                "Address": address,
+                "OpenningDate": OpenningDate,
+                "IsActive": IsActive,
+                "IsTel": IsTel
+            };
+            if (parentId)
+                RetailStoredata["ParentId"] = parentId;
+            var url = "/api/RetailStores" ;//-------------- create new mode
+            var method =  "POST";
+            if (id) {//--------------- edit mode
+                RetailStoredata["id"] = id;
+                method = "PUT";
+                url = "/api/RetailStores/" + id;
+            }
+            var settings = {
+                "url": url,
+                "method": method,
+                "timeout": 0,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "data": JSON.stringify(RetailStoredata),
+            };
+
+            $.ajax(settings).done(function (resData) {
+                if (id) {
+                    $('[data-id="' + id + '"] > span').html(name);
+                    $('#RetailStoreModal').modal('hide');
+                } else {
+                    if (parentId) {
+                        addCaseFunction(chidElem, resData.name, resData.id);
+                    } else {
+                        addInRoot(resData.name, resData.id);
+                    }
+                    $('#RetailStoreModal').modal('hide');
+                }
+            });
+        })
+        function addInChildProcess(parentId) {
+            chidElem = $('[data-id="' + parentId + '"]').get(0);
+            $('#retailId').val(parentId);
+            isInRoot = false;
+            $('#RetailStoreModal').modal('show');
+        }
+        function delProcess(parentId) {
+            if (confirm("Are you sure to delete " + $('[data-id="' + parentId + '"] > span').text()+"? [Note:] You can only delete leaf node.")) {
+                var settings = {
+                    "url": "/api/RetailStores/" + parentId,
+                    "method": "DELETE",
+                    "timeout": 0,
+                };
+
+                $.ajax(settings).done(function (resData) {
+                    $('[data-id="' + parentId + '"]').remove();
+                });
+            }
+        }
+        function editProcess(parentId) {
+
+            var settings = {
+                "url": "/api/RetailStores/" + parentId,
+                "method": "GET",
+                "timeout": 0,
+            };
+
+            $.ajax(settings).done(function (resData) {
+                $('#name').val(resData.name);
+                $('#address').val(resData.address);
+                $('#OpenningDate').val(resData.openningDate.substring(0, resData.openningDate.indexOf('T')));
+                if (resData.isActive)
+                    $('#IsActive').prop('checked', true);
+                else
+                    $('#IsActive').prop('checked', false);
+                if (resData.isTel)
+                    $('#IsTel').prop('checked', true);
+                else
+                    $('#IsTel').prop('checked', false);
+                $('#Id').val(resData.id);
+                $('#retailId').val(resData.parentId);
+                $('#RetailStoreModal').modal('show');
+            });
+        }
+        function addInRoot(name, id) {
+            $('#myUL').append(
+                `<li data-id='` + id + `'>
+                            <span class="">`+ name + `</span><a class="add-case">+</a><a class="edit-case">e</a><a class="del-case">d</a>
+                            <ul class="nested">
+                            </ul>
+                        </li>`);
+            var newItem = $('#myUL > li').eq($('#myUL > li').length - 1);//get last(new) li child
+            var newLiAddList = newItem.children('.add-case').eq(0);//get last(new) li child
+            newLiAddList.on('click', function () {
+                var elem = this;
+                var parentId = $(elem).parent().data('id');
+                $('#Id').val('')
+                addInChildProcess(parentId);
+            });
+            var editLiAddList = newItem.find('.edit-case').eq(0);//todo:
+            editLiAddList.on('click', function () {
+                var elem = this;
+                var parentId = $(elem).parent().data('id');
+                editProcess(parentId);
+            });
+            var delLiAddList = newItem.find('.del-case').eq(0);
+            delLiAddList.on('click', function () {
+                var elem = this;
+                var parentId = $(elem).parent().data('id');
+                delProcess(parentId);
+            });
+        }
+        function addInChild(name, id) {
+            addCaseFunction(chidElem, name, id)
+        }
+        var isInRoot = false;
+        $('.add-case-root').on('click', function () {
+            $('#retailId').val('');
+            $('#Id').val('')
+            isInRoot = true;
+            $('#RetailStoreModal').modal('show');
+
+        });
+        $('.add-case').on('click', function () {
+            var elem = this;
+            var parentId = $(elem).parent().data('id');
+            addInChildProcess(parentId);
+        });
+
+        function addCaseFunction(elem, name, id) {
+            var inLi = $(elem);
+            if (inLi.children('ul').find('li').length==0) {
+                inLi.children('span').eq(0).addClass('caret');
+                inLi.children('span').eq(0)[0].addEventListener("click", function () {
+                    this.parentElement.querySelector(".nested").classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                });
+                inLi.children('ul').html(
+                    `<li data-id='` + id + `'>
+                                <span class="">`+ name + `</span><a class="add-case">+</a><a class="edit-case">e</a><a class="del-case">d</a>
+                                <ul class="nested">
+                                </ul>
+                            </li>`);
+                var newItem = inLi.children('ul').find('li').eq(inLi.children('ul').find('li').length - 1);//get last(new) li child
+                var newLiAddList = newItem.find('.add-case').eq(0);
+                newLiAddList.on('click', function () {
+                    var elem = this;
+                    $('#Id').val('')
+                    var parentId = $(elem).parent().data('id');
+                    addInChildProcess(parentId);
+                });
+                var editLiAddList = newItem.find('.edit-case').eq(0);
+                editLiAddList.on('click', function () {
+                    var elem = this;
+                    var parentId = $(elem).parent().data('id');
+                    editProcess(parentId);
+                });
+                var delLiAddList = newItem.find('.del-case').eq(0);
+                delLiAddList.on('click', function () {
+                    var elem = this;
+                    var parentId = $(elem).parent().data('id');
+                    delProcess(parentId);
+                });
+            } else {
+
+                inLi.children('ul').append(
+                    `<li data-id='` + id + `'>
+                                <span class="">`+ name + `</span><a class="add-case">+</a><a class="edit-case">e</a><a class="del-case">d</a>
+                                <ul class="nested">
+                                </ul>
+                            </li>`);
+                var newItem = inLi.children('ul').find('li').eq(inLi.children('ul').find('li').length - 1);//get last(new) li child
+                var newLiAddList = newItem.find('.add-case').eq(0);
+                newLiAddList.on('click', function () {
+                    var elem = this;
+                    $('#Id').val('')
+                    var parentId = $(elem).parent().data('id');
+                    addInChildProcess(parentId);
+                });
+                var editLiAddList = newItem.find('.edit-case').eq(0);//todo:
+                editLiAddList.on('click', function () {
+                    var elem = this;
+                    var parentId = $(elem).parent().data('id');
+                    editProcess(parentId);
+                });
+                var delLiAddList = newItem.find('.del-case').eq(0);
+                delLiAddList.on('click', function () {
+                    var elem = this;
+                    var parentId = $(elem).parent().data('id');
+                    delProcess(parentId);
+                });
+            }
+        }
+
+        $('#clear').on('click', function () {
+            $('#RetailStoreModal input').val('');
+        });
+    </script>
+
+}

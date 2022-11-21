@@ -1,0 +1,164 @@
+{
+	"info": {
+		"_postman_id": "fad87994-aeb9-442d-81c8-2a79ea39d594",
+		"name": "RetailStore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetById",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://37.140.242.92/api/RetailStores/b47d8b57-ae9f-4f41-8a1c-7c10b72e6271",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44318",
+					"path": [
+						"api",
+						"RetailStores",
+						"b47d8b57-ae9f-4f41-8a1c-7c10b72e6271"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://37.140.242.92/api/RetailStores",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44318",
+					"path": [
+						"api",
+						"RetailStores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Id\":\"b47d8b57-ae9f-4f41-8a1c-7c10b72e6271\",\r\n    \"Name\": \"ali.rasouli\",\r\n    \"Address\": \"ddddd\",\r\n    \"OpenningDate\": \"2022-11-20\",\r\n    \"IsActive\": true,\r\n    \"IsTel\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://37.140.242.92/api/RetailStores/b47d8b57-ae9f-4f41-8a1c-7c10b72e6271",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44318",
+					"path": [
+						"api",
+						"RetailStores",
+						"b47d8b57-ae9f-4f41-8a1c-7c10b72e6271"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Id\":\"b47d8b57-ae9f-4f41-8a1c-7c10b72e6271\",\r\n    \"Name\": \"ali.rasouli\",\r\n    \"Address\": \"ddddd\",\r\n    \"OpenningDate\": \"2022-11-20\",\r\n    \"IsActive\": true,\r\n    \"IsTel\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://37.140.242.92/api/RetailStores/b47d8b57-ae9f-4f41-8a1c-7c10b72e6271",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44318",
+					"path": [
+						"api",
+						"RetailStores",
+						"b47d8b57-ae9f-4f41-8a1c-7c10b72e6271"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://37.140.242.92/api/RetailStores/b47d8b57-ae9f-4f41-8a1c-7c10b72e6271",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44318",
+					"path": [
+						"api",
+						"RetailStores",
+						"b47d8b57-ae9f-4f41-8a1c-7c10b72e6271"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
